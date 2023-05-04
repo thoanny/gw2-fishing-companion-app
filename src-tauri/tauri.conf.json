@@ -42,7 +42,16 @@
         "resizable": true,
         "title": "gw2-fishing-companion",
         "width": 800,
-        "height": 600
+        "height": 600,
+        "visible": false
+      },
+      {
+        "width": 400,
+        "height": 200,
+        "decorations": false,
+        "resizable": false,
+        "url": "splashscreen.html",
+        "label": "splashscreen"
       }
     ]
   }

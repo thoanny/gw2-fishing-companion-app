@@ -1,29 +1,33 @@
 <script setup>
-import { ref } from "vue"
+import { onMounted, ref } from "vue"
 import { invoke } from '@tauri-apps/api/tauri'
-import axios from 'axios';
 
 const GW2 = ref({});
 const isOnline = ref(false);
 const noFishes = ref(false);
 
-const getGW2MumbleLink = () => {
-  invoke('gw2_mumble_link')
-    .then((rustMsg) => {
-      rustMsg = JSON.parse(rustMsg);
-      if (rustMsg.length === 0) {
-        isOnline.value = false;
-      } else {
+onMounted(() => {
+  const getGW2MumbleLink = () => {
+    invoke('gw2_mumble_link')
+      .then((rustMsg) => {
         rustMsg = JSON.parse(rustMsg);
-        isOnline.value = true;
-      }
+        if (rustMsg.length === 0) {
+          isOnline.value = false;
+        } else {
+          rustMsg = JSON.parse(rustMsg);
+          isOnline.value = true;
+        }
 
-      GW2.value = rustMsg;
-    });
-};
+        GW2.value = rustMsg;
+      });
+  };
 
-getGW2MumbleLink();
-setInterval(getGW2MumbleLink, 30000);
+  invoke('close_splashscreen').then(() => {
+    getGW2MumbleLink();
+    setInterval(getGW2MumbleLink, 30000);
+  });
+
+});
 
 const allFishes = ref([]);
 const fishes = ref([]);
