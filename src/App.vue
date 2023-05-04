@@ -1,52 +1,125 @@
 <script setup>
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-import Greet from "./components/Greet.vue";
+import { ref } from "vue"
+import { invoke } from '@tauri-apps/api/tauri'
+import axios from 'axios';
+
+const GW2 = ref({});
+const isOnline = ref(false);
+const noFishes = ref(false);
+
+const getGW2MumbleLink = () => {
+  invoke('gw2_mumble_link')
+    .then((rustMsg) => {
+      rustMsg = JSON.parse(rustMsg);
+      if (rustMsg.length === 0) {
+        isOnline.value = false;
+      } else {
+        rustMsg = JSON.parse(rustMsg);
+        isOnline.value = true;
+      }
+
+      GW2.value = rustMsg;
+    });
+};
+
+getGW2MumbleLink();
+setInterval(getGW2MumbleLink, 30000);
+
+const allFishes = ref([]);
+const fishes = ref([]);
+const allBaits = ref({});
+const baits = ref({});
+const allHoles = ref({});
+const holes = ref({});
+
+const filters = ref({
+  achievement: '',
+  hole: '',
+  bait: ''
+});
+
+async function initFishesApiData() {
+  let response = await fetch(
+    `https://api.lebusmagique.fr/api/gw2/fishes`
+  );
+  let data = await response.json();
+  allFishes.value = data;
+
+  data.forEach((fish, f) => {
+    allFishes.value[f]['done'] = 0;
+
+    if (fish.hole !== null) {
+      allHoles.value[fish.hole.id] = fish.hole.name;
+    }
+
+    if (fish.bait !== null) {
+      allBaits.value[fish.bait.uid] = fish.bait.name;
+    }
+  });
+
+  fishes.value = allFishes.value;
+  holes.value = allHoles.value;
+  baits.value = allBaits.value;
+}
+
+initFishesApiData();
+
+function updateFilters() {
+  noFishes.value = false;
+  baits.value = allBaits.value;
+
+  fishes.value = allFishes.value.filter(fish => {
+    if (filters.value.hole && filters.value.hole != fish.hole?.id) {
+      return false;
+    }
+
+    if (filters.value.bait && filters.value.bait != fish.bait?.uid) {
+      return false;
+    }
+
+    return true;
+  });
+
+  if (fishes.value.length === 0) {
+    noFishes.value = true;
+  }
+}
+
 </script>
 
 <template>
-  <div class="container">
-    <h1>Welcome to Tauri!</h1>
+  <div class="flex gap-2 m-2 mb-0">
+    <button class="btn btn-xs" :class="{ 'btn-error': !isOnline, 'btn-success': isOnline }"
+      v-text="(isOnline) ? 'Online' : 'Offline'"></button>
+    <button class="btn btn-outline btn-xs" v-if="GW2">{{ GW2.name }}</button>
+    <button class="btn btn-outline btn-xs" v-if="GW2">MAP: {{ GW2.map_id }}</button>
+    <button class="btn btn-outline btn-xs" v-if="filters.hole">Hole: {{ filters.hole }}</button>
+    <button class="btn btn-outline btn-xs" v-if="filters.bait">Bait: {{ filters.bait }}</button>
+  </div>
 
-    <div class="row">
-      <a href="https://vitejs.dev" target="_blank">
-        <img src="/vite.svg" class="logo vite" alt="Vite logo" />
-      </a>
-      <a href="https://tauri.app" target="_blank">
-        <img src="/tauri.svg" class="logo tauri" alt="Tauri logo" />
-      </a>
-      <a href="https://vuejs.org/" target="_blank">
-        <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-      </a>
-    </div>
+  <div class="grid grid-cols-3 gap-2 m-2 mb-0">
+    <select class="select select-xs select-bordered w-full" @change="updateFilters($event)" id="achievement">
+      <option selected>-- Région --</option>
+      <option value="todo">TODO</option>
+    </select>
 
-    <p>Click on the Tauri, Vite, and Vue logos to learn more.</p>
+    <select class="select select-xs select-bordered w-full" @change="updateFilters" v-model="filters.hole">
+      <option value="" selected>-- Zone de pêche --</option>
+      <option v-for="name, id in holes" :key="id" :value="id">{{ name }}</option>
+    </select>
 
-    <p>
-      Recommended IDE setup:
-      <a href="https://code.visualstudio.com/" target="_blank">VS Code</a>
-      +
-      <a href="https://github.com/johnsoncodehk/volar" target="_blank">Volar</a>
-      +
-      <a href="https://github.com/tauri-apps/tauri-vscode" target="_blank"
-        >Tauri</a
-      >
-      +
-      <a href="https://github.com/rust-lang/rust-analyzer" target="_blank"
-        >rust-analyzer</a
-      >
-    </p>
-
-    <Greet />
+    <select class="select select-xs select-bordered w-full" @change="updateFilters" v-model="filters.bait">
+      <option value="" selected>-- Appât --</option>
+      <option v-for="name, id in baits" :key="id" :value="id">{{ name }}</option>
+    </select>
+  </div>
+  <button class="btn loading" v-if="!fishes">Chargement en cours...</button>
+  <button class="btn btn-ghost" v-else-if="noFishes">Aucun poisson</button>
+  <div v-else v-for="fish in fishes" class="border m-2 p-2 flex flex-col gap-1">
+    <strong>{{ fish.name }}</strong>
+    <span v-if="fish.hole">{{ fish.hole.name }}</span>
+    <span v-if="fish.bait">{{ fish.bait.name }}</span>
   </div>
 </template>
 
-<style scoped>
-.logo.vite:hover {
-  filter: drop-shadow(0 0 2em #747bff);
-}
-
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #249b73);
-}
-</style>
+<style scoped></style>

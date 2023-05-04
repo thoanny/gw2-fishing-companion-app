@@ -1003,6 +1003,7 @@ dependencies = [
 name = "gw2-fishing-companion"
 version = "0.0.0"
 dependencies = [
+ "mumblelink_reader",
  "serde",
  "serde_json",
  "tauri",
@@ -1378,6 +1379,18 @@ checksum = "e7810e0be55b428ada41041c41f32c9f1a42817901b4ccf45fa3d4b6561e74c7"
 dependencies = [
  "adler",
  "simd-adler32",
+]
+
+[[package]]
+name = "mumblelink_reader"
+version = "0.3.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7bb6e5dd83fba43b1ceec24031949c53bc9fcf1eed537737bc9bbe5ed52ea66f"
+dependencies = [
+ "lazy_static",
+ "libc",
+ "thiserror",
+ "winapi",
 ]
 
 [[package]]
