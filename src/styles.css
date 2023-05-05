@@ -1,3 +1,55 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('assets/fonts/Roboto-Regular-webfont.woff');
+    src: url('assets/fonts/Roboto-Regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('assets/fonts/Roboto-Bold-webfont.woff');
+    src: url('assets/fonts/Roboto-Bold-webfont.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    /* Regular: 400 */
+    font-family: 'RobotoCondensed';
+    src: url('assets/fonts/RobotoCondensed-Bold-webfont.woff');
+    src: url('assets/fonts/RobotoCondensed-Bold-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+*::-webkit-scrollbar {
+    @apply w-3 rounded-full;
+}
+
+*::-webkit-scrollbar-track {
+    @apply bg-primary;
+}
+
+*::-webkit-scrollbar-thumb {
+    @apply bg-base-100 border border-2 rounded-full;
+    border: 3px solid transparent;
+    @apply border-primary;
+}
+
+body {
+    @apply tracking-wide;
+    font-family: 'Roboto';
+}
+
+.ff-r {
+    font-family: 'Roboto';
+}
+
+.ff-rc {
+    font-family: 'RobotoCondensed';
+}

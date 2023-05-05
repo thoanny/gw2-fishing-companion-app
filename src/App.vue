@@ -1,6 +1,11 @@
 <script setup>
-import { onMounted, ref } from "vue"
-import { invoke } from '@tauri-apps/api/tauri'
+import { onMounted, ref } from 'vue';
+import { invoke } from '@tauri-apps/api/tauri';
+
+import TitleBar from './components/TitleBar.vue';
+import Fish from './components/Fish.vue';
+
+// Save data in files: https://www.matthewtao.com/blog/post/glipma-devlog-2/
 
 const GW2 = ref({});
 const isOnline = ref(false);
@@ -92,38 +97,43 @@ function updateFilters() {
 </script>
 
 <template>
-  <div class="flex gap-2 m-2 mb-0">
-    <button class="btn btn-xs" :class="{ 'btn-error': !isOnline, 'btn-success': isOnline }"
-      v-text="(isOnline) ? 'Online' : 'Offline'"></button>
-    <button class="btn btn-outline btn-xs" v-if="GW2">{{ GW2.name }}</button>
-    <button class="btn btn-outline btn-xs" v-if="GW2">MAP: {{ GW2.map_id }}</button>
-    <button class="btn btn-outline btn-xs" v-if="filters.hole">Hole: {{ filters.hole }}</button>
-    <button class="btn btn-outline btn-xs" v-if="filters.bait">Bait: {{ filters.bait }}</button>
-  </div>
+  <TitleBar />
+  <div class="mt-10 text-sm">
+    <div class="flex gap-2 m-2 mb-0">
+      <button class="btn btn-xs" :class="{ 'btn-error': !isOnline, 'btn-success': isOnline }"
+        v-text="(isOnline) ? 'Online' : 'Offline'"></button>
+      <button class="btn btn-outline btn-xs" v-if="GW2">{{ GW2.name }}</button>
+      <button class="btn btn-outline btn-xs" v-if="GW2">MAP: {{ GW2.map_id }}</button>
+      <button class="btn btn-outline btn-xs" v-if="filters.hole">Hole: {{ filters.hole }}</button>
+      <button class="btn btn-outline btn-xs" v-if="filters.bait">Bait: {{ filters.bait }}</button>
+    </div>
+    <div class="grid grid-cols-3 gap-2 m-2 mb-0">
+      <select class="select select-xs select-bordered w-full" @change="updateFilters($event)" id="achievement">
+        <option selected>- Région</option>
+        <option value="todo">TODO</option>
+      </select>
 
-  <div class="grid grid-cols-3 gap-2 m-2 mb-0">
-    <select class="select select-xs select-bordered w-full" @change="updateFilters($event)" id="achievement">
-      <option selected>-- Région --</option>
-      <option value="todo">TODO</option>
-    </select>
+      <select class="select select-xs select-bordered w-full" @change="updateFilters" v-model="filters.hole">
+        <option value="" selected>- Zone</option>
+        <option v-for="name, id in holes" :key="id" :value="id">{{ name }}</option>
+      </select>
 
-    <select class="select select-xs select-bordered w-full" @change="updateFilters" v-model="filters.hole">
-      <option value="" selected>-- Zone de pêche --</option>
-      <option v-for="name, id in holes" :key="id" :value="id">{{ name }}</option>
-    </select>
-
-    <select class="select select-xs select-bordered w-full" @change="updateFilters" v-model="filters.bait">
-      <option value="" selected>-- Appât --</option>
-      <option v-for="name, id in baits" :key="id" :value="id">{{ name }}</option>
-    </select>
-  </div>
-  <button class="btn loading" v-if="!fishes">Chargement en cours...</button>
-  <button class="btn btn-ghost" v-else-if="noFishes">Aucun poisson</button>
-  <div v-else v-for="fish in fishes" class="border m-2 p-2 flex flex-col gap-1">
-    <strong>{{ fish.name }}</strong>
-    <span v-if="fish.hole">{{ fish.hole.name }}</span>
-    <span v-if="fish.bait">{{ fish.bait.name }}</span>
+      <select class="select select-xs select-bordered w-full" @change="updateFilters" v-model="filters.bait">
+        <option value="" selected>- Appât</option>
+        <option v-for="name, id in baits" :key="id" :value="id">{{ name }}</option>
+      </select>
+    </div>
+    <button class="btn loading" v-if="!fishes">Chargement en cours...</button>
+    <button class="btn btn-ghost" v-else-if="noFishes">Aucun poisson</button>
+    <div v-else class="mt-2 pl-3 py-4 pr-2 flex flex-col gap-5 border-t border-primary" id="fishes">
+      <Fish v-for="fish in fishes" :key="fish.uid" :fish="fish" />
+    </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+#fishes {
+  height: calc(100vh - 6.5rem);
+  overflow-y: auto;
+}
+</style>

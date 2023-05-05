@@ -1,18 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 
 <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tauri + Vue 3 App</title>
-    <script>
-
-    </script>
+    <title>Compagnon de pêche</title>
 </head>
 
 <body>
-    SPLASH!
+    <div class="h-screen w-screen flex flex-col gap-4 justify-center items-center">
+        <img src="./src/assets/images/logo-splashscreen.png" alt="">
+        <div class="text-accent ff-rc uppercase text-3xl text-center">
+            Compagnon<br />de pêche
+        </div>
+        <div class="text-xs uppercase ff-rc text-secondary">
+            Version <span id="app-version"></span>
+        </div>
+    </div>
+    <script type="module" src="/src/splashscreen.js"></script>
 </body>
 
 </html>

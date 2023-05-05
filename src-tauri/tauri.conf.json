@@ -16,6 +16,17 @@
       "shell": {
         "all": false,
         "open": true
+      },
+      "window": {
+        "all": false,
+        "close": true,
+        "hide": false,
+        "show": false,
+        "maximize": false,
+        "minimize": false,
+        "unmaximize": false,
+        "unminimize": false,
+        "startDragging": true
       }
     },
     "bundle": {
@@ -39,19 +50,27 @@
     "windows": [
       {
         "fullscreen": false,
-        "resizable": true,
+        "resizable": false,
         "title": "gw2-fishing-companion",
-        "width": 800,
-        "height": 600,
-        "visible": false
+        "width": 310,
+        "height": 410,
+        "decorations": false,
+        "visible": false,
+        "fileDropEnabled": false,
+        "transparent": true,
+        "alwaysOnTop": true
       },
       {
-        "width": 400,
-        "height": 200,
+        "width": 310,
+        "height": 410,
         "decorations": false,
         "resizable": false,
         "url": "splashscreen.html",
-        "label": "splashscreen"
+        "label": "splashscreen",
+        "fileDropEnabled": false,
+        "center": true,
+        "transparent": true,
+        "alwaysOnTop": true
       }
     ]
   }
